@@ -4,7 +4,7 @@ import re
 
 # Test text "It's my string. <p>dddd</p> It has to be correct displayed"
 
-tpl = DocxTemplate('templates/richtext_tpl.docx')
+tpl = DocxTemplate('richtext_tpl.docx')
 tagged_text = "<p>drow</p>It's my string.<p><em>port</em></p> It has to be correct displayed "
 tag = '<p>'
 clean_sliced_array = []
@@ -35,13 +35,13 @@ def add_paragraph(text):
 
 def slicer(text):
     sliced_array = []
-    t = []
-    w = []
     splitted = re.split('<', text)
     for a in splitted:
         if a == '':
             continue
         elif a[0] == "/":
+            t = []
+            w = []
             for i in range(0, len(a)):
                 if a[i] == '>':
                     break
@@ -58,6 +58,8 @@ def slicer(text):
             w = ''.join(w)
             sliced_array.append(w)
         else:
+            t = []
+            w = []
             for i in range(0, len(a)):
                 if a[i] == '>':
                     break
@@ -129,7 +131,7 @@ context = {
 }
 
 tpl.render(context)
-tpl.save('output/richtext.docx')
+tpl.save('richtext.docx')
 
 """# -*- coding: utf-8 -*-
 '''
