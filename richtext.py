@@ -5,8 +5,8 @@ import re
 # Test text "It's my string. <p>dddd</p> It has to be correct displayed"
 
 tpl = DocxTemplate('richtext_tpl.docx')
-tagged_text = "<p>drow</p>It's my string.<p><em>port</em></p> It has to be correct displayed "
-tag = '<p>'
+tagged_text = "<p>drow</p>It's my string.<p><em><b>port</b></em> It has to be correct displayed </p>"
+tag = 'p', 'em', 'b', '/p', '/em', '/b'
 clean_sliced_array = []
 text_fragments = []
 rt = RichText()
@@ -89,7 +89,7 @@ slicer(tagged_text)
 
 # Appending untagged and tagged text. Creating an order
 
-def append_text_fragments():
+"""def append_text_fragments():
     # Slicing a string
 
     first_slice = re.split(tag, tagged_text)
@@ -111,20 +111,55 @@ def append_text_fragments():
         if a == clean_text:
             add_paragraph(clean_text)
         else:
-            rt.add(a)
+            rt.add(a)"""
 
-
+#
 # Searching for tag
 
-def if_tag(text):
+"""def if_tag(text):
     if not re.findall('<*>', text):
         rt.add(text)
     else:
-        append_text_fragments()
+        append_text_fragments()"""
 
 
 # Multiple tags
 
+def tag_next_to_tag(list):
+    i = 0
+    l = 1
+    extratag = []
+    multitag = []
+    print(len(list))
+    while i <= len(list):
+        if list[i] in tag:
+            multitag.append(list[i])
+            while i + l <= len(list):
+                if list[i+l] in tag:
+                    multitag.append(list[i+l])
+                    print(i, l)
+                    l += 1
+                else:
+                    break
+            print(i, l)
+            i = i + l
+            l = 1
+
+        else:
+            print(i, l)
+            i += 1
+        print(multitag)
+        extratag.append(multitag)
+        multitag = []
+    for l in extratag:
+        if l != '':
+            multitag.append(l)
+    print(extratag)
+
+
+
+
+tag_next_to_tag(clean_sliced_array)
 
 context = {
     'context_variable': rt,
