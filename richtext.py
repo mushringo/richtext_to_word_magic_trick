@@ -1,34 +1,125 @@
 from docxtpl import DocxTemplate, RichText
 import re
 
-
-# Test text "It's my string. <p>dddd</p> It has to be correct displayed"
-
 tpl = DocxTemplate('richtext_tpl.docx')
-tagged_text = "<p>drow</p>It's my string.<p><em><b>port</b></em> It has to be correct displayed </p>"
-tag = 'p', 'em', 'b', '/p', '/em', '/b'
+tagged_text = "<color='#00FF02'>KEK</color><p>Hello</p>It's my string.<em>So i can do</em><b>Whatever I want</b>" \
+              " <u>Whit it.</u> <sup>But it has to be correct displayed</sup><sub> And Im doing my best.</sub>KEKW"
+tag = 'p', 'em', 'b', 'u', 'sup', 'sub', 'li', 'ul', 'ol', 'color'
+"""
+Значение тэгов
+p - paragraph
+em - italic
+b - bold
+u - underline
+li - list item
+ul - unordered list
+ol - ordered list
+sup - superscript
+sub - subscript 
+"""
+
 clean_sliced_array = []
 text_fragments = []
 rt = RichText()
-
+# _____________________________________________________________________________________________________________________
+# basic functions
+# ---------------------------------------------------------------------------------------------------------------------
 
 # Creating closed tag for open one
+
 
 def close_tag(tg):
     gag = tg[0] + "/" + tg[1:len(tg)]
     return gag
 
 
-# Function for <em> Italic-tag
-
-def add_italic(text):
-    rt.add(text, italic=True)
+def unclose_tag(tg):
+    gag = tg[1:len(tg)]
+    return gag
 
 
 # Function for <p> tag
 
 def add_paragraph(text):
     rt.add('\n' + text + '\n')
+
+
+# Function for <em> Italic-tag
+
+def add_italic(text):
+    rt.add(text, italic=True)
+    rt.add(' ')
+
+
+# Function for <b> Bold tag
+
+def add_bold(text):
+    rt.add(text, bold=True)
+    rt.add(' ')
+
+
+# Function for <u> Underline tag
+
+def add_underline(text):
+    rt.add(text, underline=True)
+    rt.add(' ')
+
+
+# Function for <sub> Subscript tag
+
+def add_subscript(text):
+    rt.add(text, subscript=True)
+    rt.add(' ')
+
+
+# Function for <sup> Superscript tag
+
+def add_superscript(text):
+    rt.add(text, superscript=True)
+    rt.add(' ')
+
+
+# Function for <color> Subscript tag
+
+def add_color(text, clr):
+    rt.add(text, color=str(clr))
+    rt.add(' ')
+
+# ____________________________________________________________________________________________________________________
+# Complicated functions
+# --------------------------------------------------------------------------------------------------------------------
+
+
+
+
+# Executing tags
+
+def executor(list):
+    for i in range(0, len(list)):
+        if list[i][0:5] == 'color':
+            add_color(list[(i + 1)], list[i][7:14])
+        elif list[i] in tag:
+            if list[i] == 'li':
+                continue
+            elif list[i] == 'p':
+                add_paragraph(list[i+1])
+            elif list[i] == 'em':
+                add_italic(list[i+1])
+            elif list[i] == 'b':
+                add_bold(list[i+1])
+            elif list[i] == 'u':
+                add_underline(list[i+1])
+            elif list[i] == 'sub':
+                add_subscript(list[i+1])
+            elif list[i] == 'sup':
+                add_superscript(list[i+1])
+            else:
+                rt.add(list[i])
+        elif unclose_tag(list[i]) in tag:
+            if i+1 < len(list) and list[i+1] not in tag:
+                rt.add(list[i+1])
+        else:
+            continue
 
 
 # Slicing texts by tags and word fragments
@@ -82,50 +173,14 @@ def slicer(text):
         else:
             clean_sliced_array.append(sliced_array[k])
     print(clean_sliced_array)
-
+    return clean_sliced_array
 
 slicer(tagged_text)
-
-
-# Appending untagged and tagged text. Creating an order
-
-"""def append_text_fragments():
-    # Slicing a string
-
-    first_slice = re.split(tag, tagged_text)
-    last_slice = re.split(close_tag(tag), re.split(tag, tagged_text)[1])
-    clean_text = last_slice[0]
-
-    if first_slice[0] != '' and last_slice[1] != '':
-        text_fragments.append(first_slice[0])
-        text_fragments.append(clean_text)
-        text_fragments.append(last_slice[1])
-    elif first_slice[0] != '' and last_slice[1] == '':
-        text_fragments.append(first_slice[0])
-        text_fragments.append(clean_text)
-    elif first_slice[0] == '' and last_slice[1] != '':
-        text_fragments.append(clean_text)
-        text_fragments.append(last_slice[1])
-
-    for a in text_fragments:
-        if a == clean_text:
-            add_paragraph(clean_text)
-        else:
-            rt.add(a)"""
-
-#
-# Searching for tag
-
-"""def if_tag(text):
-    if not re.findall('<*>', text):
-        rt.add(text)
-    else:
-        append_text_fragments()"""
-
+executor(clean_sliced_array)
 
 # Multiple tags
 
-def tag_next_to_tag(list):
+"""def tag_next_to_tag(list):
     i = 0
     l = 1
     extratag = []
@@ -154,13 +209,11 @@ def tag_next_to_tag(list):
     for l in extratag:
         if l != '':
             multitag.append(l)
-    print(extratag)
+    print(extratag)"""
 
-
-
-
-tag_next_to_tag(clean_sliced_array)
-
+# ___________________________________________________________________________________________________________________
+# Output
+# -------------------------------------------------------------------------------------------------------------------
 context = {
     'context_variable': rt,
 }
@@ -168,80 +221,3 @@ context = {
 tpl.render(context)
 tpl.save('richtext.docx')
 
-"""# -*- coding: utf-8 -*-
-'''
-Created : 2015-03-26
-@author: Eric Lapouyade
-'''
-
-from docxtpl import DocxTemplate, RichText
-import re
-tag = "<em>"
-
-
-def close_tag(tag):
-    tag = tag[0] + "/" + tag[1:len(tag)]
-    return tag
-
-
-
-source = '<em>dddd</em>'
-tpl = DocxTemplate('templates/richtext_tpl.docx')
-
-rt = RichText()
-rt.add('some more italic', italic=True, color='#ff00ff')
-
-""""""def add_bold():
-
-def add_italic():
-
-def add_underline():
-
-def add_paragraph():
-
-def add_bullet_list():
-
-def add_colour():""""""
-
-
-rt.add('a rich text', style='myrichtextstyle')
-rt.add(' with ')
-rt.add('some italic', italic=True)
-rt.add(' and ')
-rt.add('some violet', color='#ff00ff')
-rt.add(' and ')
-rt.add('some striked', strike=True)
-rt.add(' and ')
-rt.add('some small', size=14)
-rt.add(' or ')
-rt.add('big', size=60)
-rt.add(' text.')
-rt.add('\nYou can add an hyperlink, here to ')
-rt.add('google', url_id=tpl.build_url_id('http://google.com'))
-rt.add('\nEt voilà ! ')
-rt.add('\n1st line')
-rt.add('\n2nd line')
-rt.add('\n3rd line')
-rt.add('\n\n<cool>')
-for ul in ['single', 'double', 'thick', 'dotted', 'dash', 'dotDash', 'dotDotDash', 'wave']:
-    rt.add('\nUnderline : ' + ul + ' \n', underline=ul)
-rt.add('\nFonts :\n', underline=True)
-rt.add('Arial\n', font='Arial')
-rt.add('Courier New\n', font='Courier New')
-rt.add('Times New Roman\n', font='Times New Roman')
-rt.add('\n\nHere some')
-rt.add('superscript', superscript=True)
-rt.add(' and some')
-rt.add('subscript', subscript=True)
-
-
-rt_embedded = RichText('an example of ')
-rt_embedded.add(rt)
-
-context = {
-    'context_variable': rt,
-    'example': rt_embedded,
-}
-print(context)
-tpl.render(context)
-tpl.save('output/richtext.docx')"""
