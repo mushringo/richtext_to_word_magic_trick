@@ -2,11 +2,16 @@ from docxtpl import DocxTemplate, RichText
 import re
 
 tpl = DocxTemplate('richtext_tpl.docx')
-tagged_text = "<color='#00FF02'>KEK</color><p>Hello</p>It's my string.<em>So i can do</em><b>Whatever I want</b>" \
-              " <u>Whit it.</u> <sup>But it has to be correct displayed</sup><sub> And Im doing my best.</sub>KEKW"
+tagged_text = "<u>KEK</u><p>Hello</p>It's my string.<em>So i can do</em><b>Whatever I want</b>" \
+              " <u>Whit it.</u> <sup>But it has to be correct displayed</sup><sub> And Im doing my best.</sub>KEKW" \
+              "<ol><li>1</li><li>4</li><li>2</li></ol><ul><li>1</li><li>4</li><li>2</li></ul>"
+tagged_text_2 = "<u>KEK</u><p>Hello</p>It's my string.<em>So i can do</em><b>Whatever I want</b>" \
+              " <u>Whit it.</u> <sup>But it has to be correct displayed</sup><sub> And Im doing my best.</sub>KEKW" \
+              "<ul><li>1</li><li>2</li></ul>"
 tag = 'p', 'em', 'b', 'u', 'sup', 'sub', 'li', 'ul', 'ol', 'color'
 """
-Значение тэгов
+Tag legend:
+
 p - paragraph
 em - italic
 b - bold
@@ -21,9 +26,25 @@ sub - subscript
 clean_sliced_array = []
 text_fragments = []
 rt = RichText()
+ul_list = []
+ol_list = []
 # _____________________________________________________________________________________________________________________
 # basic functions
 # ---------------------------------------------------------------------------------------------------------------------
+
+# unordered list
+
+
+def unordered_list(text):
+    rt.add('   ' + chr(183) + ' ' + text + '\n')
+
+
+# ordered list
+
+
+def ordered_list(text, order):
+    rt.add('   ' + str(order) + '. ' + text + '\n')
+
 
 # Creating closed tag for open one
 
@@ -61,7 +82,7 @@ def add_bold(text):
 # Function for <u> Underline tag
 
 def add_underline(text):
-    rt.add(text, underline=True)
+    rt.add(text, underline=True, bold=True)
     rt.add(' ')
 
 
@@ -90,8 +111,6 @@ def add_color(text, clr):
 # --------------------------------------------------------------------------------------------------------------------
 
 
-
-
 # Executing tags
 
 def executor(list):
@@ -113,11 +132,36 @@ def executor(list):
                 add_subscript(list[i+1])
             elif list[i] == 'sup':
                 add_superscript(list[i+1])
+            elif list[i] == 'ul':
+                for l in range(i + 1, len(list)):
+                    if list[l] == '/ul':
+                        break
+                    elif list[l] == 'li' or list[l] == '/li':
+                        continue
+                    else:
+                        ul_list.append(list[l])
+                rt.add('\n')
+                for n in range(0, len(ul_list)):
+                    unordered_list(ul_list[n])
+            elif list[i] == 'ol':
+                for l in range(i + 1, len(list)):
+                    if list[l] == '/ol':
+                        break
+                    elif list[l] == 'li' or list[l] == '/li':
+                        continue
+                    else:
+                        ol_list.append(list[l])
+                rt.add('\n')
+                for n in range(0, len(ol_list)):
+                    ordered_list(ol_list[n], n + 1)
+            elif list[i] == '/ol' or list[i] == '/ul':
+                continue
             else:
                 rt.add(list[i])
         elif unclose_tag(list[i]) in tag:
             if i+1 < len(list) and list[i+1] not in tag:
-                rt.add(list[i+1])
+                if unclose_tag(list[i+1]) not in tag:
+                    rt.add(list[i+1])
         else:
             continue
 
@@ -172,11 +216,12 @@ def slicer(text):
             continue
         else:
             clean_sliced_array.append(sliced_array[k])
-    print(clean_sliced_array)
     return clean_sliced_array
+
 
 slicer(tagged_text)
 executor(clean_sliced_array)
+
 
 # Multiple tags
 
@@ -189,7 +234,7 @@ executor(clean_sliced_array)
     while i <= len(list):
         if list[i] in tag:
             multitag.append(list[i])
-            while i + l <= len(list):
+            while i + l < len(list):
                 if list[i+l] in tag:
                     multitag.append(list[i+l])
                     print(i, l)
@@ -209,7 +254,9 @@ executor(clean_sliced_array)
     for l in extratag:
         if l != '':
             multitag.append(l)
-    print(extratag)"""
+    print(extratag)
+
+tag_next_to_tag(clean_sliced_array)"""
 
 # ___________________________________________________________________________________________________________________
 # Output
