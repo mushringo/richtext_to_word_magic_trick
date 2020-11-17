@@ -5,9 +5,8 @@ tpl = DocxTemplate('richtext_tpl.docx')
 tagged_text = "<u>KEK</u><p>Hello</p>It's my string.<em>So i can do</em><b>Whatever I want</b>" \
               " <u>Whit it.</u> <sup>But it has to be correct displayed</sup><sub> And Im doing my best.</sub>KEKW" \
               "<ol><li>1</li><li>4</li><li>2</li></ol><ul><li>1</li><li>4</li><li>2</li></ul>"
-tagged_text_2 = "<u>KEK</u><p>Hello</p>It's my string.<em>So i can do</em><b>Whatever I want</b>" \
-              " <u>Whit it.</u> <sup>But it has to be correct displayed</sup><sub> And Im doing my best.</sub>KEKW" \
-              "<ul><li>1</li><li>2</li></ul>"
+
+tagged_text_2 = "<u><em>lol</em></u>"
 tag = 'p', 'em', 'b', 'u', 'sup', 'sub', 'li', 'ul', 'ol', 'color'
 """
 Tag legend:
@@ -16,9 +15,9 @@ p - paragraph
 em - italic
 b - bold
 u - underline
-li - list item
-ul - unordered list
-ol - ordered list
+li - lst item
+ul - unordered lst
+ol - ordered lst
 sup - superscript
 sub - subscript 
 """
@@ -32,14 +31,14 @@ ol_list = []
 # basic functions
 # ---------------------------------------------------------------------------------------------------------------------
 
-# unordered list
+# unordered lst
 
 
 def unordered_list(text):
     rt.add('   ' + chr(183) + ' ' + text + '\n')
 
 
-# ordered list
+# ordered lst
 
 
 def ordered_list(text, order):
@@ -113,64 +112,82 @@ def add_color(text, clr):
 
 # Executing tags
 
-def executor(list):
-    for i in range(0, len(list)):
-        if list[i][0:5] == 'color':
-            add_color(list[(i + 1)], list[i][7:14])
-        elif list[i] in tag:
-            if list[i] == 'li':
+def executor(lst):
+    for i in range(0, len(lst)):
+        if lst[i][0:5] == 'color':
+            add_color(lst[(i + 1)], lst[i][7:14])
+        elif lst[i] in tag:
+            if lst[i] == 'li':
                 continue
-            elif list[i] == 'p':
-                add_paragraph(list[i+1])
-            elif list[i] == 'em':
-                add_italic(list[i+1])
-            elif list[i] == 'b':
-                add_bold(list[i+1])
-            elif list[i] == 'u':
-                add_underline(list[i+1])
-            elif list[i] == 'sub':
-                add_subscript(list[i+1])
-            elif list[i] == 'sup':
-                add_superscript(list[i+1])
-            elif list[i] == 'ul':
-                for l in range(i + 1, len(list)):
-                    if list[l] == '/ul':
+            elif lst[i] == 'p':
+                add_paragraph(lst[i+1])
+            elif lst[i] == 'em':
+                add_italic(lst[i+1])
+            elif lst[i] == 'b':
+                add_bold(lst[i+1])
+            elif lst[i] == 'u':
+                add_underline(lst[i+1])
+            elif lst[i] == 'sub':
+                add_subscript(lst[i+1])
+            elif lst[i] == 'sup':
+                add_superscript(lst[i+1])
+            elif lst[i] == 'ul':
+                for x in range(i + 1, len(lst)):
+                    if lst[x] == '/ul':
                         break
-                    elif list[l] == 'li' or list[l] == '/li':
+                    elif lst[x] == 'li' or lst[x] == '/li':
                         continue
                     else:
-                        ul_list.append(list[l])
+                        ul_list.append(lst[x])
                 rt.add('\n')
                 for n in range(0, len(ul_list)):
                     unordered_list(ul_list[n])
-            elif list[i] == 'ol':
-                for l in range(i + 1, len(list)):
-                    if list[l] == '/ol':
+            elif lst[i] == 'ol':
+                for x in range(i + 1, len(lst)):
+                    if lst[x] == '/ol':
                         break
-                    elif list[l] == 'li' or list[l] == '/li':
+                    elif lst[x] == 'li' or lst[x] == '/li':
                         continue
                     else:
-                        ol_list.append(list[l])
+                        ol_list.append(lst[x])
                 rt.add('\n')
                 for n in range(0, len(ol_list)):
                     ordered_list(ol_list[n], n + 1)
-            elif list[i] == '/ol' or list[i] == '/ul':
+            elif lst[i] == '/ol' or lst[i] == '/ul':
                 continue
             else:
-                rt.add(list[i])
-        elif unclose_tag(list[i]) in tag:
-            if i+1 < len(list) and list[i+1] not in tag:
-                if unclose_tag(list[i+1]) not in tag:
-                    rt.add(list[i+1])
+                rt.add(lst[i])
+        elif unclose_tag(lst[i]) in tag:
+            if i+1 < len(lst) and lst[i+1] not in tag:
+                if unclose_tag(lst[i+1]) not in tag:
+                    rt.add(lst[i+1])
         else:
             continue
 
 
+
+def slicer(text):
+    a = re.split('<', text)
+    for i in a:
+        if i == '':
+            continue
+        else:
+            b = re.split('>', i)
+            for k in b:
+                if k == '':
+                    continue
+                else:
+                    clean_sliced_array.append(k)
+    return clean_sliced_array
+
+def executor(text, u=False, em=False, bld=False, sub=False, sup=False):
+    rt.add(text, underline=u, italic=em, bold=bld, subscript=sub, superscript=sup)
 # Slicing texts by tags and word fragments
 
 def slicer(text):
     sliced_array = []
     splitted = re.split('<', text)
+    print(splitted)
     for a in splitted:
         if a == '':
             continue
@@ -184,10 +201,11 @@ def slicer(text):
                     t.append(a[i])
             t = ''.join(t)
             sliced_array.append(t)
+            # If there is no tag which affects text (to refactor)
             for i in range(len(a) - 1, 0, -1):
                 if a[i] == '>':
-                    for l in range(i+1, len(a)):
-                        w.append(a[l])
+                    for x in range(i+1, len(a)):
+                        w.append(a[x])
                 else:
                     continue
             w = ''.join(w)
@@ -204,8 +222,8 @@ def slicer(text):
             sliced_array.append(t)
             for i in range(len(a) - 1, 0, -1):
                 if a[i] == '>':
-                    for l in range(i + 1, len(a)):
-                        w.append(a[l])
+                    for x in range(i + 1, len(a)):
+                        w.append(a[x])
                 else:
                     continue
 
@@ -219,44 +237,105 @@ def slicer(text):
     return clean_sliced_array
 
 
-slicer(tagged_text)
-executor(clean_sliced_array)
+def slicer_2(text):
+    z = []
+    a = re.split('<', text)
+    for i in a:
+        if i == '':
+            continue
+        else:
+            b = re.split('>', i)
+            for k in b:
+                if k == '':
+                    continue
+                else:
+                    clean_sliced_array.append(k)
+    return clean_sliced_array
+
+
+print(slicer_2(tagged_text))
 
 
 # Multiple tags
 
-"""def tag_next_to_tag(list):
+def tag_next_to_tag(lst):
     i = 0
-    l = 1
-    extratag = []
+    x = 1
+    m = 1
+    taggedarray = []
     multitag = []
-    print(len(list))
-    while i <= len(list):
-        if list[i] in tag:
-            multitag.append(list[i])
-            while i + l < len(list):
-                if list[i+l] in tag:
-                    multitag.append(list[i+l])
-                    print(i, l)
-                    l += 1
+    multiclosetag = []
+    print(len(lst))
+    while i < len(lst):
+        if lst[i] in tag:
+            multitag.append(lst[i])
+            while i + x < len(lst):
+                if lst[i+x] in tag:
+                    multitag.append(lst[i+x])
+                    print(i, x)
+                    x += 1
                 else:
                     break
-            print(i, l)
-            i = i + l
-            l = 1
-
+            print(i, x)
+            i = i + x
+            x = 1
+            taggedarray.append(multitag)
+        elif unclose_tag(lst[i]) in tag:
+            multiclosetag.append(lst[i])
+            while i + m < len(lst):
+                if lst[i + m] in tag:
+                    multiclosetag.append(lst[i + m])
+                    print(i, m)
+                    x += 1
+                else:
+                    break
+            print(i, m)
+            i = i + m
+            m = 1
+            taggedarray.append(multiclosetag)
         else:
-            print(i, l)
+            print(i, x)
             i += 1
         print(multitag)
-        extratag.append(multitag)
+        taggedarray.append(multitag)
         multitag = []
-    for l in extratag:
-        if l != '':
-            multitag.append(l)
-    print(extratag)
+    for x in taggedarray:
+        if x != '':
+            multitag.append(x)
+    print(taggedarray)
 
-tag_next_to_tag(clean_sliced_array)"""
+
+def main2(lst):
+    under = False
+    italic = False
+    for i in lst:
+        if i == 'u':
+
+            under = True
+        elif i == 'em':
+
+            italic = True
+        elif i[0] == '/':
+            continue
+        else:
+
+            lol(i, under, italic)
+
+
+
+
+
+
+
+def lol(text, u=False, em=False):
+    rt.add(text, underline=u, italic=em)
+
+
+
+lol(main2(clean_sliced_array))
+
+
+
 
 # ___________________________________________________________________________________________________________________
 # Output
@@ -267,4 +346,3 @@ context = {
 
 tpl.render(context)
 tpl.save('richtext.docx')
-

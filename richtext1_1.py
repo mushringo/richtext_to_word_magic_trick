@@ -2,17 +2,11 @@ from docxtpl import DocxTemplate, RichText
 import re
 
 tpl = DocxTemplate('richtext_tpl.docx')
-tagged_text = "<ol><b><li>text1</li></b>" \
-              "<em><li>text2</li></em>" \
-              "<u><li>text3</li></u></ol>" \
-              "<ul><u><sub><li>text4</li></sub>" \
-              "<li>text5</li>" \
-              "<sup><li>text6</li></sup></u></ul>"
-
-tagged_text_2 = "<u>KEK</u><p>Hello</p>It's my string.<em>So i can do</em><b>Whatever I want</b>" \
+tagged_text = "<u>KEK</u><p>Hello</p>It's my string.<em>So i can do</em><b>Whatever I want</b>" \
               " <u>Whit it.</u> <sup>But it has to be correct displayed</sup><sub> And Im doing my best.</sub>KEKW" \
               "<ol><li>1</li><li>4</li><li>2</li></ol><ul><li>1</li><li>4</li><li>2</li></ul>"
-tag = 'p', 'em', 'b', 'u', 'sup', 'sub', 'li', 'ul', 'ol', 'color'
+
+
 """
 Tag legend:
 
@@ -27,7 +21,7 @@ sup - superscript
 sub - subscript 
 """
 
-clean_sliced_array = []
+
 rt = RichText()
 
 
@@ -36,23 +30,9 @@ rt = RichText()
 # --------------------------------------------------------------------------------------------------------------------
 
 
-def slicer(text):
-    a = re.split('<', text)
-    for i in a:
-        if i == '':
-            continue
-        else:
-            b = re.split('>', i)
-            for k in b:
-                if k == '':
-                    continue
-                else:
-                    clean_sliced_array.append(k)
-    return clean_sliced_array
-
-
-def main_un_ital(lst):
+def richtext_convertor(text):
     order = 1
+    clean_sliced_array = []
     sup = False
     sub = False
     bold = False
@@ -61,7 +41,20 @@ def main_un_ital(lst):
     parag = False
     bi_order = False
     bi_unorder = False
-    for i in lst:
+
+    first_cut = re.split('<', text)
+    for i in first_cut:
+        if i == '':
+            continue
+        else:
+            final_cut = re.split('>', i)
+            for k in final_cut:
+                if k == '':
+                    continue
+                else:
+                    clean_sliced_array.append(k)
+
+    for i in clean_sliced_array:
         if i == '/u':
             under = False
         elif i == '/sup':
@@ -108,17 +101,13 @@ def main_un_ital(lst):
         else:
             if parag is True:
                 rt.add('\n')
-                executor(i, under, italic, bold, sub, sup)
+                rt.add(i, underline=under, italic=italic, bold=bold, subscript=sub, superscript=sup)
                 parag = False
             else:
-                executor(i, under, italic, bold, sub, sup)
+                rt.add(i, underline=under, italic=italic, bold=bold, subscript=sub, superscript=sup)
 
 
-def executor(text, u=False, em=False, bld=False, sub=False, sup=False):
-    rt.add(text, underline=u, italic=em, bold=bld, subscript=sub, superscript=sup)
-
-
-main_un_ital(slicer(tagged_text))
+richtext_convertor(tagged_text)
 
 # ___________________________________________________________________________________________________________________
 # Output
