@@ -4,9 +4,7 @@ import re
 tpl = DocxTemplate('richtext_tpl.docx')
 tagged_text = "<u>KEK</u><p>Hello</p>It's my string.<em>So i can do</em><b>Whatever I want</b>" \
               " <u>Whit it.</u> <sup>But it has to be correct displayed</sup><sub> And Im doing my best.</sub>KEKW" \
-              "<ol><li>1</li><li>4</li><li>2</li></ol><ul><li>1</li><li>4</li><li>2</li></ul>"
-
-
+              "<ol><li>1</li><li>4</li><li>2</li></ol><ul><li>1</li><li>4</li><li>2</li></ul><!DOCTYPE html>"
 """
 Tag legend:
 
@@ -22,15 +20,13 @@ sub - subscript
 """
 
 
-rt = RichText()
-
-
 # ____________________________________________________________________________________________________________________
 # Main body
 # --------------------------------------------------------------------------------------------------------------------
 
 
 def richtext_convertor(text):
+    rt = RichText()
     order = 1
     clean_sliced_array = []
     sup = False
@@ -105,15 +101,14 @@ def richtext_convertor(text):
                 parag = False
             else:
                 rt.add(i, underline=under, italic=italic, bold=bold, subscript=sub, superscript=sup)
+    return rt
 
-
-richtext_convertor(tagged_text)
 
 # ___________________________________________________________________________________________________________________
 # Output
 # -------------------------------------------------------------------------------------------------------------------
 context = {
-    'context_variable': rt,
+    'context_variable': richtext_convertor(tagged_text),
 }
 
 tpl.render(context)
