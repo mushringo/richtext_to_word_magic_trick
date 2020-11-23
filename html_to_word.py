@@ -1,7 +1,6 @@
-from docxtpl import DocxTemplate, RichText
+from docxtpl import RichText
 import re
 
-tpl = DocxTemplate('richtext_tpl.docx')
 tagged_text = "<u>KEK</u><p>Hello</p>It's my string.<em>So i can do</em><b>Whatever I want</b>" \
               " <u>Whit it.</u> <sup>But it has to be correct displayed</sup><sub> And Im doing my best.</sub>KEKW" \
               "<ol><li>1</li><li>4</li><li>2</li></ol><ul><li>1</li><li>4</li><li>2</li></ul><!DOCTYPE html>"
@@ -102,14 +101,3 @@ def richtext_convertor(text):
             else:
                 rt.add(i, underline=under, italic=italic, bold=bold, subscript=sub, superscript=sup)
     return rt
-
-
-# ___________________________________________________________________________________________________________________
-# Output
-# -------------------------------------------------------------------------------------------------------------------
-context = {
-    'context_variable': richtext_convertor(tagged_text),
-}
-
-tpl.render(context)
-tpl.save('richtext.docx')
