@@ -1,9 +1,6 @@
 from docxtpl import RichText
 import re
 
-tagged_text = "<u>KEK</u><p>Hello</p>It's my string.<em>So i can do</em><b>Whatever I want</b>" \
-              " <u>Whit it.</u> <sup>But it has to be correct displayed</sup><sub> And Im doing my best.</sub>KEKW" \
-              "<ol><li>1</li><li>4</li><li>2</li></ol><ul><li>1</li><li>4</li><li>2</li></ul><!DOCTYPE html>"
 """
 Tag legend:
 
@@ -48,7 +45,7 @@ def richtext_convertor(text):
                     continue
                 else:
                     clean_sliced_array.append(k)
-
+    print(clean_sliced_array)
     for i in clean_sliced_array:
         if i == '/u':
             under = False
@@ -56,7 +53,7 @@ def richtext_convertor(text):
             sup = False
         elif i == '/sub':
             sub = False
-        elif i == '/b':
+        elif i == '/strong' or i == '/b':
             bold = False
         elif i == '/em':
             italic = False
@@ -66,7 +63,7 @@ def richtext_convertor(text):
             sup = True
         elif i == 'sub':
             sub = True
-        elif i == 'b':
+        elif i == 'strong' or i == 'b':
             bold = True
         elif i == 'em':
             italic = True
