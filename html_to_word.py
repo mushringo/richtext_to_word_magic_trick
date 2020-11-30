@@ -23,6 +23,7 @@ sub - subscript
 
 def richtext_convertor(text):
     rt = RichText()
+    sz = 22
     order = 1
     clean_sliced_array = []
     sup = False
@@ -51,6 +52,24 @@ def richtext_convertor(text):
             under = False
         elif i == '/sup':
             sup = False
+        elif i == '/h1':
+            sz = 22
+            bold = False
+        elif i == '/h2':
+            sz = 22
+            bold = False
+        elif i == '/h3':
+            sz = 22
+            bold = False
+        elif i == '/h4':
+            sz = 22
+            bold = False
+        elif i == '/h5':
+            sz = 22
+            bold = False
+        elif i == '/h6':
+            sz = 22
+            bold = False
         elif i == '/sub':
             sub = False
         elif i == '/strong' or i == '/b':
@@ -59,6 +78,24 @@ def richtext_convertor(text):
             italic = False
         elif i == 'u':
             under = True
+        elif i == 'h1':
+            sz = 34
+            bold = True
+        elif i == 'h2':
+            sz = 30
+            bold = True
+        elif i == 'h3':
+            sz = 26
+            bold = True
+        elif i == 'h4':
+            sz = 22
+            bold = True
+        elif i == 'h5':
+            sz = 18
+            bold = True
+        elif i == 'h6':
+            sz = 14
+            bold = True
         elif i == 'sup':
             sup = True
         elif i == 'sub':
@@ -93,8 +130,8 @@ def richtext_convertor(text):
         else:
             if parag is True:
                 rt.add('\n')
-                rt.add(i, underline=under, italic=italic, bold=bold, subscript=sub, superscript=sup)
+                rt.add(i, underline=under, italic=italic, bold=bold, subscript=sub, superscript=sup, size=sz)
                 parag = False
             else:
-                rt.add(i, underline=under, italic=italic, bold=bold, subscript=sub, superscript=sup)
+                rt.add(i, underline=under, italic=italic, bold=bold, subscript=sub, superscript=sup, size=sz)
     return rt
