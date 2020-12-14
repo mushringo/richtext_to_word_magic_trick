@@ -12,7 +12,7 @@ h1_h6 = '<ul><li><h1>word</h1></li><li><h2>word</h2></li><li><h3>word</h3></li><
         '</li><li><h6>word</h6></li></ul>'
 tpl = DocxTemplate('richtext_tpl.docx')
 context = {
-    'context_variable': richtext_convertor(h1_h6),
+    'context_variable': richtext_convertor(tagged_text),
 }
 
 tpl.render(context)
