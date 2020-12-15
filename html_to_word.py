@@ -23,6 +23,7 @@ sub - subscript
 
 def richtext_convertor(text):
     rt = RichText()
+    o = 0
     sz = 22
     order = 1
     clean_sliced_array = []
@@ -46,91 +47,131 @@ def richtext_convertor(text):
                     continue
                 else:
                     clean_sliced_array.append(k)
-    print(clean_sliced_array)
-
     for i in clean_sliced_array:
         if i == 'br /':
             rt.add('\n')
-        elif i == '/u':
+            o += 1
+        elif i == '/span':
+            o += 1
             under = False
         elif i == '/sup':
+            o += 1
             sup = False
         elif i == '/h1':
+            o += 1
             sz = 22
             bold = False
         elif i == '/h2':
+            o += 1
             sz = 22
             bold = False
         elif i == '/h3':
+            o += 1
             sz = 22
             bold = False
         elif i == '/h4':
+            o += 1
             sz = 22
             bold = False
         elif i == '/h5':
+            o += 1
             sz = 22
             bold = False
         elif i == '/h6':
+            o += 1
             sz = 22
             bold = False
         elif i == '/sub':
+            o += 1
             sub = False
         elif i == '/strong' or i == '/b':
+            o += 1
             bold = False
         elif i == '/em':
+            o += 1
             italic = False
-        elif i == 'u':
+        elif i == 'span style="text-decoration: underline;"':
+            o += 1
             under = True
         elif i == 'h1':
+            o += 1
             sz = 34
             bold = True
         elif i == 'h2':
+            o += 1
             sz = 30
             bold = True
         elif i == 'h3':
+            o += 1
             sz = 26
             bold = True
         elif i == 'h4':
+            o += 1
             sz = 22
             bold = True
         elif i == 'h5':
+            o += 1
             sz = 18
             bold = True
         elif i == 'h6':
+            o += 1
             sz = 14
             bold = True
         elif i == 'sup':
+            o += 1
             sup = True
         elif i == 'sub':
+            o += 1
             sub = True
         elif i == 'strong' or i == 'b':
+            o += 1
             bold = True
         elif i == 'em':
+            o += 1
             italic = True
         elif i == 'p':
+            o += 1
             parag = True
         elif i == '/p':
-            rt.add('\n')
+            o += 1
+            if o != len(clean_sliced_array):
+                rt.add('\n')
+                print(o)
+            else:
+                continue
         elif i == 'ul':
+            o += 1
             rt.add('\n')
             bi_unorder = True
         elif i == '/ul':
+            o += 1
             bi_unorder = False
         elif i == 'ol':
-            rt.add('\n')
+            o += 1
+            if o != len(clean_sliced_array):
+                rt.add('\n')
+            else:
+                continue
             bi_order = True
         elif i == '/ol':
+            o += 1
             bi_order = False
             order = 1
         elif i == '/li':
-            rt.add('\n')
+            o += 1
+            if o != len(clean_sliced_array):
+                rt.add('\n')
+            else:
+                continue
         elif i == 'li':
+            o += 1
             if bi_unorder is True:
                 rt.add('   ' + chr(183) + ' ')
             elif bi_order is True:
                 rt.add('   ' + str(order) + '. ')
                 order += 1
         else:
+            o += 1
             if parag is True and i == '&nbsp;':
                 continue
             elif parag is True and '&nbsp;' in i:
