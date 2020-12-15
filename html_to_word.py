@@ -49,7 +49,9 @@ def richtext_convertor(text):
     print(clean_sliced_array)
 
     for i in clean_sliced_array:
-        if i == '/u':
+        if i == 'br /':
+            rt.add('\n')
+        elif i == '/u':
             under = False
         elif i == '/sup':
             sup = False
@@ -129,19 +131,14 @@ def richtext_convertor(text):
                 rt.add('   ' + str(order) + '. ')
                 order += 1
         else:
-            if parag is True and i != '&nbsp;':
-                if '&nbsp;' in i:
-                    b = re.split('&nbsp;', i)
-                    b = ''.join(b)
-                    rt.add('\n')
-                    rt.add('false')
-                    rt.add(b, underline=under, italic=italic, bold=bold, subscript=sub, superscript=sup, size=sz)
-                else:
-                    rt.add('\n')
-                    rt.add(i, underline=under, italic=italic, bold=bold, subscript=sub, superscript=sup, size=sz)
-                parag = False
-            elif parag is True and i == '&nbsp;':
+            if parag is True and i == '&nbsp;':
                 continue
+            elif parag is True and '&nbsp;' in i:
+                b = re.split('&nbsp;', i)
+                b = ''.join(b)
+                rt.add('\n')
+                rt.add(b, underline=under, italic=italic, bold=bold, subscript=sub, superscript=sup, size=sz)
+                parag = False
             else:
                 rt.add(i, underline=under, italic=italic, bold=bold, subscript=sub, superscript=sup, size=sz)
     return rt
