@@ -159,10 +159,7 @@ def richtext_convertor(text):
             order = 1
         elif i == '/li':
             o += 1
-            if o != len(clean_sliced_array):
-                rt.add('\n')
-            else:
-                continue
+            continue
         elif i == 'li':
             o += 1
             if bi_unorder is True:
