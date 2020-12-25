@@ -35,6 +35,29 @@ def richtext_convertor(text):
     parag = False
     bi_order = False
     bi_unorder = False
+    dict = {
+        '&Auml;': chr(196),
+        '&auml;': chr(228),
+        '&Ouml;': chr(214),
+        '&ouml;': chr(246),
+        '&Uuml;': chr(220),
+        '&uuml;': chr(252),
+        '&szlig;': chr(223)
+    }
+
+    for i in dict.keys():
+        if i in text:
+            splt = []
+            spl = re.split(i, text)
+            for n in range(0, len(spl)):
+                if n == len(spl) - 1:
+                    splt.append(spl[n])
+                else:
+                    splt.append(spl[n])
+                    splt.append(dict.get(i))
+            text = ''.join(splt)
+        else:
+            continue
 
     first_cut = re.split('<', text)
     for i in first_cut:
@@ -159,6 +182,8 @@ def richtext_convertor(text):
             order = 1
         elif i == '/li':
             o += 1
+            if o != len(clean_sliced_array):
+                rt.add('\n')
             continue
         elif i == 'li':
             o += 1
