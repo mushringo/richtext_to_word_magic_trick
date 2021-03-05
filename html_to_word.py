@@ -35,6 +35,8 @@ def richtext_convertor(text):
     parag = False
     bi_order = False
     bi_unorder = False
+    space = '    '
+    multiplier = 1
     dict = {
         '&Auml;': chr(196),
         '&auml;': chr(228),
@@ -42,8 +44,14 @@ def richtext_convertor(text):
         '&ouml;': chr(246),
         '&Uuml;': chr(220),
         '&uuml;': chr(252),
-        '&szlig;': chr(223)
+        '&szlig;': chr(223),
+        '&bdquo;': chr(132),
+        '&ldquo;': chr(147),
+        '&ndash;': chr(150),
+        '&amp;': chr(38)
     }
+
+
 
     for i in dict.keys():
         if i in text:
@@ -159,17 +167,22 @@ def richtext_convertor(text):
             o += 1
             if o != len(clean_sliced_array):
                 rt.add('\n')
-                print(o)
             else:
                 continue
-        elif i == 'ul':
+        elif i == 'ul' or (i == 'ul type="disc"' or i == 'ul type="circle"'):
             o += 1
-            rt.add('\n')
-            bi_unorder = True
+            if bi_unorder is True:
+                multiplier += 1
+            else:
+                rt.add('\n')
+                bi_unorder = True
         elif i == '/ul':
             o += 1
-            bi_unorder = False
-        elif i == 'ol':
+            if multiplier > 1:
+                multiplier -= 1
+            else:
+                bi_unorder = False
+        elif i == 'ol' or i == 'ol start="1" type="1"':
             o += 1
             if o != len(clean_sliced_array):
                 rt.add('\n')
@@ -188,9 +201,9 @@ def richtext_convertor(text):
         elif i == 'li':
             o += 1
             if bi_unorder is True:
-                rt.add('   ' + chr(183) + ' ')
+                rt.add(space*multiplier + chr(183) + ' ')
             elif bi_order is True:
-                rt.add('   ' + str(order) + '. ')
+                rt.add(space*multiplier + str(order) + '. ')
                 order += 1
         else:
             o += 1
